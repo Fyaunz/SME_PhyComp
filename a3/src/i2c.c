@@ -25,7 +25,11 @@ static inline void I2C_start(void) {
     I2C_wait(); // wait until start is sent
 }
 
-// send a sequence of byte
+/* send a sequence of byte
+address: adress of chip
+data: uint8_t array with start register at 0 and then the bytes to be writen to the registers
+bytes_to_write: nummber of bytes to be written
+*/
 void I2C_send(uint8_t address, unsigned char *data, uint8_t bytes_to_write) {
     I2C_start();
     TWDR = address;
@@ -39,7 +43,12 @@ void I2C_send(uint8_t address, unsigned char *data, uint8_t bytes_to_write) {
     I2C_stop();
 }
 
-// convenience method for writing data to a single register in an I2C device
+/* convenience method for writing data to a single register in an I2C device 
+address: adress of chip
+reg: register to write to
+value: Byte value to be writen 
+*/
+
 void I2C_poke(uint8_t address, uint8_t reg, uint8_t value) {
     uint8_t data[2];
     data[0] = reg;
@@ -47,7 +56,12 @@ void I2C_poke(uint8_t address, uint8_t reg, uint8_t value) {
     I2C_send(address, data, 2);
 }
 
-// retrieve a sequence of bytes from an I2C device
+/* retrieve a sequence of bytes from an I2C device 
+address: adress of chip
+start_register: start register from which to start reading 
+data:  uint8_t array of read data bytes 
+bytes_to_read: nummber of bytes to be read
+*/
 void I2C_read_registers(uint8_t address, uint8_t start_register, uint8_t *data, uint8_t bytes_to_read) {
     // send start
     I2C_start();

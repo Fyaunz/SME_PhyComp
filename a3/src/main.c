@@ -8,8 +8,11 @@
 
 int __attribute__((OS_main)) main (void)
 {
+
   USART_init();
+  uint8_t data = getChar();
 
-  I
-
+  while (data != 'a');
+  read_all();
+  
 }

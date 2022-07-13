@@ -71,7 +71,6 @@ void putBin_char(uint8_t c) {
         put_c( (c & (1 << i)) ? '1' : '0' );
     }
     // new line with \r because either picocom or wsl are stupid
-    putString("\n\r");
 }
 
 void putBin_int(int32_t x){
@@ -101,7 +100,6 @@ void putBin_int(int32_t x){
 
     }
     // new line with \r because either picocom or wsl are stupid
-    putString("\n\r");
 
 }
 
@@ -133,7 +131,6 @@ void putHex(int32_t x) {
         put_c(outbuf[i]);
     }
     // new line with \r because either picocom or wsl are stupid
-    putString("\n\r");
 
 }
 
@@ -164,7 +161,6 @@ void putDec(int32_t x) {
         }
         i=i-1;
         while (i>= 0) put_c(buf[i--]);
-        putString("\n\r");
     }
     // new line with \r because either picocom or wsl are stupid
 }
