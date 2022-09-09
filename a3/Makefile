@@ -20,7 +20,7 @@
 CLOCK        = 16000000UL
 TARGET       = main
 SRC          = ./src/$(TARGET).c ./src/i2c.c ./src/serialCom.c ./src/com.c 
-AVRDUDE_PORT = /dev/ttyS3
+AVRDUDE_PORT = /dev/ttyS4
 
 ### make targets:
 ###

@@ -4,19 +4,16 @@
 #include "i2c.h"
 #define BLINK_DELAY_MS 200
 
-void blink(void){
-  DDRD |= (1<<DDD4);
-    // turn LED on
-    PORTD |= (1 << PORTD4);
-    _delay_ms(BLINK_DELAY_MS);
+volatile int16_t disStart = 0;
+volatile int16_t disEnd = 0;
+volatile uint64_t disbuffer[64];
 
-    // turn LED off
-    PORTD &= ~ (1 << PORTD4);
-    _delay_ms(BLINK_DELAY_MS);
-}
+ISR(TIMER1_CAPT_vect){
 
-ISR(INT0_vect){
-  
+    uint64_t duration =  ICR1;
+    duration = duration / 2;
+    disbuffer[disEnd] = ((duration * 34) / 2000) -5;
+    disEnd = (disEnd + 1) & 63;
 }
 
 void init_IMU(void){
@@ -48,4 +45,33 @@ void read_all(void){
     putBin_char(data[i]);
     putString("\n\r");
   }  
+}
+
+void ping(void){
+    PORTD |= (1<<PORTD3);
+    _delay_us(10);
+    PORTD &= ~(1<<PORTD3);
+    ICR1 &= 0x0000;
+    TCNT1 &= 0x0000;
+}
+
+void initReg(void){
+  DDRD = (1<<DDD3);
+  ICR1 &= 0x0000;
+}
+
+uint32_t meassureDistance(void){
+
+  ping();
+
+  if(disStart != disEnd){
+    uint32_t distance = disbuffer[disStart];
+    disStart = (disStart + 1) & 63;
+    if(distance > 4 && distance < 300){
+      return distance;
+    }
+  } 
+
+  ICR1 &= 0x0000;
+
 }
