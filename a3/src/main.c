@@ -11,6 +11,7 @@ int __attribute__((OS_main)) main (void){
   while (1){
     uint32_t distance = meassureDistance();
     putDec(distance);
+    putString("\n\r");
     _delay_ms(100);
   }
   

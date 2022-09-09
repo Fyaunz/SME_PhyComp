@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 #include "serialCom.h"
 #include "i2c.h"
 #define BLINK_DELAY_MS 200
@@ -9,11 +10,14 @@ volatile int16_t disEnd = 0;
 volatile uint64_t disbuffer[64];
 
 ISR(TIMER1_CAPT_vect){
+  uint64_t duration =  ICR1;
+  duration = duration / 2;
+  disbuffer[disEnd] = ((duration * 34) / 2000) -5;
+  disEnd = (disEnd + 1) & 63;
+}
 
-    uint64_t duration =  ICR1;
-    duration = duration / 2;
-    disbuffer[disEnd] = ((duration * 34) / 2000) -5;
-    disEnd = (disEnd + 1) & 63;
+ISR(INT0_vect){
+  
 }
 
 void init_IMU(void){
@@ -56,10 +60,12 @@ void ping(void){
 }
 
 void initReg(void){
+  TCCR1B |= (1<<CS11);
+  TIMSK1 |= (1<<ICIE1);
   DDRD = (1<<DDD3);
   ICR1 &= 0x0000;
 }
-
+//meassures Distance via Ultrasonic Sensor
 uint32_t meassureDistance(void){
 
   ping();
@@ -67,11 +73,12 @@ uint32_t meassureDistance(void){
   if(disStart != disEnd){
     uint32_t distance = disbuffer[disStart];
     disStart = (disStart + 1) & 63;
-    if(distance > 4 && distance < 300){
+    if(distance < 300){
       return distance;
+    } else {
+      return 300;
     }
   } 
-
   ICR1 &= 0x0000;
 
 }
